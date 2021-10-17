@@ -14,8 +14,9 @@ public interface TaskService {
      * @return taskId - id of created task
      * @throws ExecutionException
      * @throws InterruptedException
+     * @throws IOException
      */
-    Long createTask(String youtubeChannelId) throws ExecutionException, InterruptedException;
+    Long createTask(String youtubeChannelId) throws ExecutionException, InterruptedException, IOException;
 
     /**
      *

@@ -23,39 +23,31 @@ public class TaskServiceImpl implements TaskService {
     private TaskRepository taskRepository;
 
     @Override
-    public Long createTask(String youtubeChannelId) throws ExecutionException, InterruptedException {
+    public Long createTask(String youtubeChannelId) throws ExecutionException, InterruptedException, IOException {
         List<VideoDetailsBE> videoDetailsBEList = new ArrayList<>();
-        CompletableFuture<TaskBE> future = CompletableFuture.supplyAsync(() -> {
-            TaskBE task = taskRepository.findByChannelId(youtubeChannelId);
-            task = task != null ? task : aTaskBE().withChannelId(youtubeChannelId).build();
 
-            List<VideoDetailsBE> oldVideoDetails = task.getVideoDetailsBEList();
-            // Define a list to store items in the list of uploaded videos.
-            List<PlaylistItem> playlistItemList = null;
-            try {
-                playlistItemList = YoutubeAccessService.GetDateFromYoutubeChennel(youtubeChannelId);
-            } catch (GeneralSecurityException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        TaskBE task = taskRepository.findByChannelId(youtubeChannelId);
+        task = task != null ? task : aTaskBE().withChannelId(youtubeChannelId).build();
+
+        List<VideoDetailsBE> oldVideoDetails = task.getVideoDetailsBEList();
+
+        List<PlaylistItem> playlistItemList = YoutubeAccessUtil.GetDateFromYoutubeChennel(youtubeChannelId);
+        for (PlaylistItem playlistItem : playlistItemList) {
+            String videoId = playlistItem.getContentDetails().getVideoId();
+            VideoDetailsBE videoDetailsBE = aVideoDetailsBE()
+                    .withVideoId(playlistItem.getContentDetails().getVideoId())
+                    .withDescription(playlistItem.getSnippet().getDescription())
+                    .withVideoLink("https://www.youtube.com/watch?v=" + videoId)
+                    .withTask(task)
+                    .build();
+            if (oldVideoDetails == null
+                    || !oldVideoDetails.stream().filter(videoDetails -> videoDetails.equals(videoDetailsBE)).findFirst().isPresent()) {
+                videoDetailsBEList.add(videoDetailsBE);
             }
-            for (PlaylistItem playlistItem : playlistItemList) {
-                String videoId = playlistItem.getContentDetails().getVideoId();
-                VideoDetailsBE videoDetailsBE = aVideoDetailsBE()
-                        .withVideoId(playlistItem.getContentDetails().getVideoId())
-                        .withDescription(playlistItem.getSnippet().getDescription())
-                        .withVideoLink("https://www.youtube.com/watch?v=" + videoId)
-                        .withTask(task)
-                        .build();
-                if (oldVideoDetails == null
-                        || !oldVideoDetails.stream().filter(videoDetails -> videoDetails.equals(videoDetailsBE)).findFirst().isPresent()) {
-                    videoDetailsBEList.add(videoDetailsBE);
-                }
-            }
-            task.setVideoDetailsBEList(videoDetailsBEList);
-            return taskRepository.save(task);
-        });
-        return future.get().getId();
+        }
+        task.setVideoDetailsBEList(videoDetailsBEList);
+        task = taskRepository.save(task);
+        return task.getId();
     }
 
     public List<VideoDetailsBE> getVideosLinkedToChannel(Long taskId) {

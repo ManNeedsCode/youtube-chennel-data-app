@@ -23,7 +23,7 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/{youtubeChannelId}")
-    public Long createTask(@PathVariable String youtubeChannelId) throws ExecutionException, InterruptedException {
+    public Long createTask(@PathVariable String youtubeChannelId) throws ExecutionException, InterruptedException, IOException {
         return taskService.createTask(youtubeChannelId);
     }
 

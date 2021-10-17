@@ -3,11 +3,17 @@ services:
   app:
     container_name: app
     image: app-api-task
-    build: ./
+    build:
+      context: .
     ports:
-      - "8082:8080"
+      - "8080:8082"
     depends_on:
       - dbpostgresql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
   dbpostgresql:
     image: postgres
     ports:
@@ -15,4 +21,3 @@ services:
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=mydb
