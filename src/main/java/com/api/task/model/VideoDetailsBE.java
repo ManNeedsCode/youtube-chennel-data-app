@@ -1,6 +1,8 @@
 package com.api.task.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,6 +24,7 @@ public class VideoDetailsBE implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(name = "task_id", referencedColumnName = "task_id", nullable = false)
     @JsonBackReference
+    @NotFound(action = NotFoundAction.IGNORE)
     private TaskBE taskBE;
 
     public Long getId() {
