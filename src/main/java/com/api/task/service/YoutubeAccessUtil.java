@@ -44,7 +44,6 @@ public class YoutubeAccessUtil {
             properties.load(in);
         } catch (IOException e) {
             LOGGER.error("There was an error reading {} : {} : {}", PROPERTIES_FILENAME, e.getCause(), e.getMessage());
-            System.exit(1);
         }
         // This object is used to make YouTube Data API requests. The last
         // argument is required, but since we don't need anything, we pass null.
