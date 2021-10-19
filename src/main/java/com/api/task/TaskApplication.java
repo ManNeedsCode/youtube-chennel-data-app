@@ -33,4 +33,9 @@ public class TaskApplication {
 		executor.initialize();
 		return executor;
 	}
+
+    @Bean
+    public YoutubeAccessUtil util() {
+        return new YoutubeAccessUtil();
+    }
 }

@@ -1,7 +1,5 @@
 package com.api.task.service;
 
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -11,7 +9,6 @@ import com.google.api.services.youtube.YouTube.Search;
 import com.google.api.services.youtube.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-@Service
 public class YoutubeAccessUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeAccessUtil.class);
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
