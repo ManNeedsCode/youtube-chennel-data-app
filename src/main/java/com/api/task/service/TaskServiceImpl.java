@@ -29,6 +29,9 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private YoutubeAccessUtil youtubeAccessUtil;
+
     @Override
     @Transactional
     @Async
@@ -41,7 +44,7 @@ public class TaskServiceImpl implements TaskService {
 
         List<VideoDetailsBE> oldVideoDetails = task.getVideoDetailsBEList();
         LOGGER.info("Fetching details of videos of channel {}", youtubeChannelId);
-        List<PlaylistItem> playlistItemList = YoutubeAccessUtil.GetDateFromYoutubeChennel(youtubeChannelId);
+        List<PlaylistItem> playlistItemList = youtubeAccessUtil.getDataFromYoutubeChennel(youtubeChannelId);
         LOGGER.info("Number of videos in youtube chennel {} are " + playlistItemList.size(), youtubeChannelId);
         for (PlaylistItem playlistItem : playlistItemList) {
             String videoId = playlistItem.getContentDetails().getVideoId();

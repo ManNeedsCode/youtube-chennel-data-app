@@ -7,11 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -25,10 +23,6 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @RequestMapping("/")
-    public String home() {
-        return "Hello Docker World";
-    }
 
     @PostMapping("/tasks/{youtubeChannelId}")
     public CompletableFuture<ResponseEntity> createTask(@PathVariable String youtubeChannelId) throws ExecutionException, InterruptedException, IOException {
@@ -37,7 +31,8 @@ public class TaskController {
 
     }
 
-    @GetMapping("/tasks/{taskId}")
+    @GetMapping(value ="/tasks/{taskId}")
+    @ResponseStatus(HttpStatus.OK)
     public List<VideoDetailsBE> getVideosLinkedToChannel(@PathVariable Long taskId) {
         return taskService.getVideosLinkedToChannel(taskId);
     }

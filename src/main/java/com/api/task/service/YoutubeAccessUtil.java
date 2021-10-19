@@ -9,6 +9,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTube.Search;
 import com.google.api.services.youtube.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,28 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-
+@Service
 public class YoutubeAccessUtil {
-    /**
-     * Define a global instance of the HTTP transport.
-     */
-    public static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-    /**
-     * Define a global instance of the JSON factory.
-     */
-    public static final JsonFactory JSON_FACTORY = new JacksonFactory();
-
-    /**
-     * Define a global variable that identifies the name of a file that
-     * contains the developer's API key.
-     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(YoutubeAccessUtil.class);
+    private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+    private static final JsonFactory JSON_FACTORY = new JacksonFactory();
     private static final String PROPERTIES_FILENAME = "youtube.properties";
 
     /**
-     * Define a global instance of a Youtube object, which will be used
-     * to make YouTube Data API requests.
+     * Define a instance of a Youtube object, which will be used to make YouTube Data API requests.
      */
-    private static YouTube youtubeService;
+    private YouTube youtubeService;
 
     /**
      * Initialize a YouTube object to fetch videos detail from a YouTube channel and return a list of PlaylistItem
@@ -45,7 +38,7 @@ public class YoutubeAccessUtil {
      * @param chennelId Youtube Channel id.
      * @return List of PlaylistItem
      */
-    public static List<PlaylistItem> GetDateFromYoutubeChennel(String chennelId) throws IOException {
+    public List<PlaylistItem> getDataFromYoutubeChennel(String chennelId) throws IOException {
         // Define a list to store items in the list of uploaded videos.
         List<PlaylistItem> playlistItemList = new ArrayList<>();
         // Read the developer key from the properties file.
@@ -53,20 +46,13 @@ public class YoutubeAccessUtil {
         try {
             InputStream in = Search.class.getResourceAsStream("/" + PROPERTIES_FILENAME);
             properties.load(in);
-
         } catch (IOException e) {
-            System.err.println("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause()
-                    + " : " + e.getMessage());
+            LOGGER.error("There was an error reading {} : {} : {}", PROPERTIES_FILENAME, e.getCause(), e.getMessage());
             System.exit(1);
         }
         // This object is used to make YouTube Data API requests. The last
-        // argument is required, but since we don't need anything
-        // initialized when the HttpRequest is initialized, we override
-        // the interface and provide a no-op function.
-        youtubeService = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
-            public void initialize(HttpRequest request) throws IOException {
-            }
-        }).setApplicationName("youtube-chennel-access-data").build();
+        // argument is required, but since we don't need anything, we pass null.
+        youtubeService = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, null).setApplicationName("youtube-chennel-access-data").build();
 
         YouTube.Channels.List request = youtubeService.channels()
                 .list("snippet,contentDetails,statistics");
@@ -76,7 +62,7 @@ public class YoutubeAccessUtil {
         // {{ https://cloud.google.com/console }}
         String apiKey = properties.getProperty("youtube.apikey");
         request.setKey(apiKey);
-        ChannelListResponse channelResult = request.setId("UCOO4KwlBt52Yk_6OURJUCHQ").execute();
+        ChannelListResponse channelResult = request.setId(chennelId).execute();
         List<Channel> channelsList = channelResult.getItems();
         if (channelsList != null) {
             // The user's default channel is the first item in the list.

@@ -1,6 +1,7 @@
 package com.api.task;
 
 import com.api.task.repository.TaskRepository;
+import com.api.task.service.YoutubeAccessUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -32,5 +33,4 @@ public class TaskApplication {
 		executor.initialize();
 		return executor;
 	}
-
 }
